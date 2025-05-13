@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom EnerTradeZK colors
+				enerTrade: {
+					purple: '#9b30ff',
+					lightPurple: '#b975ff',
+					darkPurple: '#7a20d1',
+					blue: '#0d1a3a',
+					darkBlue: '#091128',
+					neonPurple: '#bc13fe'
 				}
 			},
 			borderRadius: {
@@ -84,11 +94,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						opacity: '1',
+						filter: 'brightness(1) drop-shadow(0 0 5px rgba(188, 19, 254, 0.5))'
+					},
+					'50%': {
+						opacity: '0.8',
+						filter: 'brightness(1.2) drop-shadow(0 0 12px rgba(188, 19, 254, 0.8))'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-glow': 'pulse-glow 3s infinite'
 			}
 		}
 	},
