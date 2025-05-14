@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Marketplace from "./pages/Marketplace";
 import Wallet from "./pages/Wallet";
 import Transactions from "./pages/Transactions";
+import Tokenization from "./pages/Tokenization";
 import Navbar from "./components/Navbar";
 
 const queryClient = new QueryClient();
@@ -27,6 +27,7 @@ const App = () => (
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/tokenization" element={<Tokenization />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

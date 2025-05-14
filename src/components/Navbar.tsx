@@ -22,6 +22,16 @@ const Navbar = () => {
           {connected && (
             <div className="hidden md:flex items-center space-x-6">
               <Link 
+                to="/tokenization"
+                className={`text-sm font-medium ${
+                  location.pathname === '/tokenization' 
+                    ? 'text-white border-b-2 border-enerTrade-purple' 
+                    : 'text-gray-300 hover:text-white'
+                } transition-colors`}
+              >
+                Tokenização de energia
+              </Link>
+              <Link 
                 to="/marketplace"
                 className={`text-sm font-medium ${
                   location.pathname === '/marketplace' 

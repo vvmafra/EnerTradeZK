@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContext';
@@ -151,10 +150,11 @@ const Marketplace = () => {
                 </div>
                 
                 <div className="p-4">
-                  <div className="grid grid-cols-5 text-center text-sm font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
-                    <div className="py-2 px-1">QTD</div>
+                  <div className="grid grid-cols-6 text-center text-sm font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
+                    <div className="py-2 px-1 text-emerald-300">QTD</div>
                     <div className="py-2 px-1 col-span-2 bg-emerald-900/40 text-emerald-300">COMPRA</div>
                     <div className="py-2 px-1 col-span-2 bg-rose-900/40 text-rose-300">VENDA</div>
+                    <div className="py-2 px-1 text-rose-300">QTD</div>
                   </div>
                   
                   <div className="space-y-1">
@@ -163,7 +163,7 @@ const Marketplace = () => {
                       const sellOffer = contract.sellOffers[index];
                       
                       return (
-                        <div key={index} className="grid grid-cols-5 text-center py-2 text-sm border-b border-gray-700">
+                        <div key={index} className="grid grid-cols-6 text-center py-2 text-sm border-b border-gray-700">
                           {/* Buy quantity */}
                           <div className="text-emerald-400">
                             {buyOffer?.quantity.toFixed(2) || '-'}
@@ -183,6 +183,10 @@ const Marketplace = () => {
                             onClick={() => sellOffer && handleOpenModal(contract, 'SELL', sellOffer.price, sellOffer.quantity)}
                           >
                             {sellOffer ? `R$ ${sellOffer.price.toFixed(2)}` : '-'}
+                          </div>
+
+                          <div className="text-rose-400">
+                            {sellOffer?.quantity.toFixed(2) || '-'}
                           </div>
                         </div>
                       );
