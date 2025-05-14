@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContext';
 import { ArrowRight } from 'lucide-react';
@@ -7,40 +6,40 @@ const Index = () => {
   const { connected, connectWallet, connecting } = useWallet();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="text-center max-w-3xl">
+    <div className="min-h-screen flex flex-col items-center justify-center px-2 sm:px-4">
+      <div className="text-center w-full max-w-3xl mx-auto mt-20">
         <div className="mb-8 flex justify-center">
           <img 
             src="/lovable-uploads/38030b57-9e65-456b-8225-2d407f583efe.png" 
             alt="EnerTradeZK Logo" 
-            className="h-40 w-40 animate-pulse-glow"
+            className="h-28 w-28 sm:h-36 sm:w-36 md:h-40 md:w-40 animate-pulse-glow"
           />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 glow-text bg-clip-text text-transparent bg-gradient-to-r from-enerTrade-purple to-enerTrade-neonPurple">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 glow-text bg-clip-text text-transparent bg-gradient-to-r from-enerTrade-purple to-enerTrade-neonPurple">
           EnerTradeZK
         </h1>
-        <p className="text-xl md:text-2xl mb-8 text-gray-300">
+        <p className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-300">
           Plataforma descentralizada de negociação de contratos futuros de energia elétrica
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="glass-panel p-6 text-left">
-            <div className="text-enerTrade-lightPurple text-lg font-semibold mb-2">Descentralização</div>
-            <p className="text-gray-300 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+          <div className="glass-panel p-4 sm:p-6 text-left">
+            <div className="text-enerTrade-lightPurple text-base sm:text-lg font-semibold mb-2">Descentralização</div>
+            <p className="text-gray-300 text-xs sm:text-sm">
               Negocie energia elétrica sem intermediários, com total autonomia e transparência.
             </p>
           </div>
           
-          <div className="glass-panel p-6 text-left">
-            <div className="text-enerTrade-lightPurple text-lg font-semibold mb-2">Tokenização</div>
-            <p className="text-gray-300 text-sm">
+          <div className="glass-panel p-4 sm:p-6 text-left">
+            <div className="text-enerTrade-lightPurple text-base sm:text-lg font-semibold mb-2">Tokenização</div>
+            <p className="text-gray-300 text-xs sm:text-sm">
               Cada token representa 1 kWh de energia, facilitando a compra e venda de unidades de energia.
             </p>
           </div>
           
-          <div className="glass-panel p-6 text-left">
-            <div className="text-enerTrade-lightPurple text-lg font-semibold mb-2">Segurança</div>
-            <p className="text-gray-300 text-sm">
+          <div className="glass-panel p-4 sm:p-6 text-left">
+            <div className="text-enerTrade-lightPurple text-base sm:text-lg font-semibold mb-2">Segurança</div>
+            <p className="text-gray-300 text-xs sm:text-sm">
               Contratos registrados em blockchain garantem a segurança e confiabilidade das transações.
             </p>
           </div>
@@ -51,7 +50,7 @@ const Index = () => {
             <button 
               onClick={connectWallet} 
               disabled={connecting}
-              className="bg-enerTrade-purple hover:bg-enerTrade-lightPurple text-white py-3 px-8 rounded-md text-lg font-medium transition-all duration-300 flex items-center justify-center"
+              className="bg-enerTrade-purple hover:bg-enerTrade-lightPurple text-white py-3 px-8 rounded-md text-base sm:text-lg font-medium transition-all duration-300 flex items-center justify-center"
             >
               {connecting ? (
                 <>
@@ -66,7 +65,7 @@ const Index = () => {
           ) : (
             <Link 
               to="/marketplace"
-              className="bg-enerTrade-purple hover:bg-enerTrade-lightPurple text-white py-3 px-8 rounded-md text-lg font-medium transition-all duration-300 flex items-center"
+              className="bg-enerTrade-purple hover:bg-enerTrade-lightPurple text-white py-3 px-8 rounded-md text-base sm:text-lg font-medium transition-all duration-300 flex items-center"
             >
               Acessar Marketplace
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -75,8 +74,10 @@ const Index = () => {
         </div>
       </div>
       
-      <div className="absolute bottom-6 text-center text-xs text-gray-500">
-        <p>© {new Date().getFullYear()} EnerTradeZK. Todos os direitos reservados.</p>
+      <div className="w-full flex justify-center bottom-6 left-0 px-2 m-5">
+        <div className="text-center text-xs text-gray-500">
+          <p>© 2025 EnerTradeZK. Todos os direitos reservados.</p>
+        </div>
       </div>
     </div>
   );
