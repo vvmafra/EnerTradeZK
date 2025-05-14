@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
+import { ethers } from 'ethers';
+import { CONTRACTS } from '../config/contracts';
 
 const Tokenization = () => {
   const [priceType, setPriceType] = useState('');
   const [submarket, setSubmarket] = useState('');
   const [energySource, setEnergySource] = useState('');
   const [volume, setVolume] = useState('');
+  const [energy, setEnergy] = useState('');
   const [maturityDate, setMaturityDate] = useState('');
   const [totalTokens, setTotalTokens] = useState<number>(0);
   const { connected } = useWallet();
@@ -28,23 +31,26 @@ const Tokenization = () => {
     }
   }, [connected, navigate]);
 
-  const calculateTotalTokens = () => {
-    if (!volume || !maturityDate) return;
+  const calculateVolume = () => {
+    if (!energy || !maturityDate) {
+      setVolume('');
+      return;
+    }
 
     const [month, year] = maturityDate.split('/');
     const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-    const total = parseFloat(volume) * daysInMonth * 24;
-    setTotalTokens(total);
+    const calculatedVolume = parseFloat(energy) / (24 * daysInMonth);
+    setVolume(isNaN(calculatedVolume) ? '' : calculatedVolume.toFixed(10));
   };
 
   useEffect(() => {
-    calculateTotalTokens();
-  }, [volume, maturityDate]);
+    calculateVolume();
+  }, [energy, maturityDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!connected) {
+    if (!connected || !window.ethereum) {
       toast({
         title: "Carteira não conectada",
         description: "Conecte sua carteira para realizar a tokenização.",
@@ -54,10 +60,41 @@ const Tokenization = () => {
 
     try {
       // TODO: Implementar interação com prova ZK e smart contract
+
       toast({
         title: "Tokenização iniciada",
         description: "Processando sua solicitação...",
       });
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      
+      const contract = new ethers.Contract(
+        CONTRACTS.EnerZToken.address,
+        CONTRACTS.EnerZToken.abi,
+        signer
+      );
+
+      console.log(contract);
+
+      console.log(energy);
+      console.log(typeof energy);
+
+      const userAddress = await signer.getAddress();
+      const balance = await contract.balanceOf(userAddress);
+
+      console.log(ethers.utils.formatUnits(balance, 18)); // mostra saldo em TNTS
+  
+      const quantidade = ethers.BigNumber.from(energy); 
+     
+      const tx = await contract.mint(userAddress, quantidade);
+      await tx.wait();
+      
+      toast({
+        title: "Tokenização concluída",
+        description: "Tokens gerados com sucesso.",
+      });
+      
     } catch (error) {
       toast({
         title: "Erro",
@@ -115,27 +152,27 @@ const Tokenization = () => {
                   <SelectValue placeholder="Selecione a fonte de energia" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hydro">Hidrelétrica</SelectItem>
-                  <SelectItem value="solar">Solar</SelectItem>
-                  <SelectItem value="wind">Eólica</SelectItem>
-                  <SelectItem value="thermal">Térmica</SelectItem>
+                  <SelectItem value="conventional">Convencional</SelectItem>
+                  <SelectItem value="conventional-special">Convencional especial</SelectItem>
+                  <SelectItem value="incentivated-50">Incentivada 50%</SelectItem>
+                  <SelectItem value="incentivated-100">Incentivada 100%</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Volume Negociado (kWh médio/mês)</label>
+              <label className="text-sm font-medium">Energia gerada (MWh)</label>
               <Input
                 type="number"
-                value={volume}
-                onChange={(e) => setVolume(e.target.value)}
-                placeholder="Digite o volume"
+                value={energy}
+                onChange={(e) => setEnergy(e.target.value)}
+                placeholder="Digite a energia"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Data de Vencimento (MM/AAAA)</label>
+              <label className="text-sm font-medium">Período de Fornecimento (MM/AAAA)</label>
               <Input
                 type="text"
                 value={maturityDate}
@@ -147,9 +184,16 @@ const Tokenization = () => {
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">Volume Negociado</label>
+              <div className="p-3 bg-enerTrade-darkBlue rounded-md text-center">
+                <span className="text-xl font-semibold">{volume || '0'} MW médios / mês</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-sm font-medium">Total de Tokens</label>
               <div className="p-3 bg-enerTrade-darkBlue rounded-md text-center">
-                <span className="text-xl font-semibold">{totalTokens.toLocaleString()} TRON</span>
+                <span className="text-xl font-semibold">{energy} TNTS</span>
               </div>
             </div>
 
