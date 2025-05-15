@@ -72,6 +72,10 @@ Para conectar sua carteira:
 3. Aprove a conexão na sua carteira
 4. Pronto! Você já pode começar a negociar tokens de energia
 
+## 🚀 Deploy
+
+O projeto está em produção na Vercel: [EnerTradeZK](https://ener-trade-zk.vercel.app/)
+
 ## 📞 Suporte
 
 Para suporte abra uma issue no GitHub.
