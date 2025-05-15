@@ -13,9 +13,7 @@ Uma plataforma inovadora para negociação de tokens de energia, construída com
 - ⚛️ React - Biblioteca JavaScript para interfaces
 - 🎨 Tailwind CSS - Framework CSS utilitário
 - 🎯 shadcn-ui - Componentes UI reutilizáveis
-- 🔐 Zero-Knowledge Proofs - Para privacidade e segurança das transações
 - 🌐 Web3.js/Ethers.js - Integração com blockchain e carteiras Web3
-- 📦 Hardhat - Ambiente de desenvolvimento Ethereum
 
 ## 📁 Estrutura de Pastas
 
