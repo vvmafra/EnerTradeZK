@@ -1,73 +1,79 @@
-# Welcome to your Lovable project
+# 🚀 EnerTradeZK
 
-## Project info
+Uma plataforma inovadora para negociação de tokens de energia, construída com tecnologias modernas e seguras, integrando Web3 e Zero-Knowledge Proofs para transações privadas e seguras.
 
-**URL**: https://lovable.dev/projects/6556e81b-a32e-46fc-bb38-804eab938c9b
+## 📸 Demonstração
 
-## How can I edit this code?
+![Demo Screenshot](./public/print.png)
 
-There are several ways of editing your application.
+## 📦 Tecnologias Utilizadas
 
-**Use Lovable**
+- ⚡ Vite - Build tool e servidor de desenvolvimento
+- 🔷 TypeScript - Tipagem estática
+- ⚛️ React - Biblioteca JavaScript para interfaces
+- 🎨 Tailwind CSS - Framework CSS utilitário
+- 🎯 shadcn-ui - Componentes UI reutilizáveis
+- 🔐 Zero-Knowledge Proofs - Para privacidade e segurança das transações
+- 🌐 Web3.js/Ethers.js - Integração com blockchain e carteiras Web3
+- 📦 Hardhat - Ambiente de desenvolvimento Ethereum
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6556e81b-a32e-46fc-bb38-804eab938c9b) and start prompting.
+## 📁 Estrutura de Pastas
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+EnerTradeZK/
+├── src/              # Código fonte da aplicação
+│   ├── components/   # Componentes React reutilizáveis
+│   ├── config/       # Configurações do Smart Contract
+│   ├── pages/        # Páginas da aplicação
+│   ├── services/     # Serviços e integrações
+│   ├── hooks/        # Custom hooks (incluindo Web3)
+│   ├── types/        # Objetos
+│   ├── App.tsx       # Componente principal
+│   └── main.tsx      # Ponto de entrada
+└── public/           # Arquivos públicos
 ```
 
-**Edit a file directly in GitHub**
+## 🛠️ Como Rodar o Projeto
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+**Pré-requisitos:**
+- Node.js v20+
+- npm
+- MetaMask ou outra carteira Web3 instalada
 
-**Use GitHub Codespaces**
+```bash
+# Clone o repositório
+git clone https://github.com/vvmafra/EnerTradeZK
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Entre no diretório
+cd EnerTradeZK
 
-## What technologies are used for this project?
+# Instale as dependências
+npm install
 
-This project is built with:
+# Inicie o servidor de desenvolvimento
+npm run dev
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Para build de produção
+npm run build
+```
 
-## How can I deploy this project?
+## 🎯 Funcionalidades Principais
 
-Simply open [Lovable](https://lovable.dev/projects/6556e81b-a32e-46fc-bb38-804eab938c9b) and click on Share -> Publish.
+- 📊 Dashboard de negociação de tokens de energia
+- 🔄 Sistema de tokens de energia
+- 🔐 Integração com Zero-Knowledge Proofs
+- 👛 Conexão com carteiras Web3 (MetaMask, WalletConnect)
+- 💎 Suporte a múltiplas redes (Ethereum, Polygon, etc.)
+- 🔒 Transações seguras e privadas
 
-## Can I connect a custom domain to my Lovable project?
+## 🌐 Conexão Web3
 
-Yes, you can!
+Para conectar sua carteira:
+1. Clique no botão "Conectar Carteira"
+2. Selecione sua carteira preferida
+3. Aprove a conexão na sua carteira
+4. Pronto! Você já pode começar a negociar tokens de energia
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📞 Suporte
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Para suporte abra uma issue no GitHub.
