@@ -85,9 +85,7 @@ const Tokenization = () => {
 
       console.log(ethers.utils.formatUnits(balance, 18)); // mostra saldo em TNTS
   
-      const quantidade = ethers.BigNumber.from(energy); 
-     
-      const tx = await contract.mint(userAddress, quantidade);
+      const tx = await contract.mint(await signer.getAddress(), Number(energy));
       await tx.wait();
       
       toast({
