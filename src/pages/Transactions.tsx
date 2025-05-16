@@ -123,10 +123,11 @@ const Transactions = () => {
             </div>
           ) : (
             <div className="overflow-hidden">
-              <div className="grid grid-cols-6 text-gray-400 text-sm border-b border-gray-700 pb-2 mb-3">
+              <div className="grid grid-cols-7 text-gray-400 text-sm border-b border-gray-700 pb-2 mb-3">
                 <div>Tipo</div>
                 <div>Quantidade</div>
-                <div>Preço (USDC)</div>
+                <div>Preço</div>
+                <div>Preço Unitário</div>
                 <div>Comprador</div>
                 <div>Vendedor</div>
                 <div className="text-right">Horário</div>
@@ -141,7 +142,7 @@ const Transactions = () => {
                   {exchangeTransactions.map((tx, index) => (
                     <div 
                       key={index}
-                      className="grid grid-cols-6 py-3 text-sm border-b border-gray-700 hover:bg-enerTrade-darkBlue/50 transition-colors"
+                      className="grid grid-cols-7 py-3 text-sm border-b border-gray-700 hover:bg-enerTrade-darkBlue/50 transition-colors"
                     >
                       <div>
                         <span 
@@ -160,10 +161,16 @@ const Transactions = () => {
                           EnerZ
                         </span>
                       </div>
-                      <div>{tx.price} <span 
+                      <div>{(parseFloat(tx.price)).toFixed(2)} <span 
                           className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center">
                           USDC
                         </span></div>
+                      <div>
+                        {(parseFloat(tx.price) / parseFloat(tx.amount)).toFixed(2)}
+                        <span className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center">
+                          USDC
+                        </span>
+                      </div>
                       <div className="truncate">{tx.buyer}</div>
                       <div className="truncate">{tx.seller}</div>
                       <div className="text-right text-gray-400">

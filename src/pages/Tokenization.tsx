@@ -75,15 +75,8 @@ const Tokenization = () => {
         signer
       );
 
-      console.log(contract);
-
-      console.log(energy);
-      console.log(typeof energy);
-
       const userAddress = await signer.getAddress();
       const balance = await contract.balanceOf(userAddress);
-
-      console.log(ethers.utils.formatUnits(balance, 18)); // mostra saldo em EnerZ
   
       const tx = await contract.mint(await signer.getAddress(), ethers.utils.parseUnits(energy, 18));
       await tx.wait();

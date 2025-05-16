@@ -67,7 +67,7 @@ const Wallet = () => {
             const block = await event.getBlock();
             const amountFormatted = ethers.utils.formatUnits(amount, 18);
             const priceFormatted = ethers.utils.formatUnits(price, 6);
-            const total = parseFloat(amountFormatted) * parseFloat(priceFormatted);
+            const total = parseFloat(priceFormatted);
             
             return {
               type: buyer === address ? 'BUY' : 'SELL',
@@ -119,7 +119,9 @@ const Wallet = () => {
       //   .filter(tx => tx.type === 'BUY')
       //   .reduce((acc, tx) => acc + tx.total, 0);
 
-      const avgBuyPrice = totalBought > 0 ? totalSpent / totalBought : 0;
+      const avgBuyPrice = totalBought > 0
+        ? transactions.filter(tx => tx.type === 'BUY').reduce((acc, tx) => acc + parseFloat(tx.price), 0) / totalBought
+        : 0;
 
       // Total vendido e preço médio de venda
       const totalSold = transactions
@@ -130,7 +132,12 @@ const Wallet = () => {
         .filter(tx => tx.type === 'SELL')
         .reduce((acc, tx) => acc + tx.total, 0);
 
-      const avgSellPrice = totalSold > 0 ? totalReceived / totalSold : 0;
+      const avgSellPrice = totalSold > 0
+        ? transactions.filter(tx => tx.type === 'SELL').reduce((acc, tx) => acc + parseFloat(tx.price), 0) / totalSold
+        : 0;
+
+      const profitLoss = totalReceived - totalSpent;
+      const profitLossPercent = totalSpent > 0 ? (profitLoss / totalSpent) * 100 : 0;
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast({
@@ -167,11 +174,15 @@ const Wallet = () => {
 
   const totalBought = transactions.filter(tx => tx.type === 'BUY').reduce((acc, tx) => acc + parseFloat(tx.amount), 0);
   const totalSpent = transactions.filter(tx => tx.type === 'BUY').reduce((acc, tx) => acc + tx.total, 0);
-  const avgBuyPrice = totalBought > 0 ? totalSpent / totalBought : 0;
+  const avgBuyPrice = totalBought > 0
+    ? transactions.filter(tx => tx.type === 'BUY').reduce((acc, tx) => acc + parseFloat(tx.price), 0) / totalBought
+    : 0;
 
   const totalSold = transactions.filter(tx => tx.type === 'SELL').reduce((acc, tx) => acc + parseFloat(tx.amount), 0);
   const totalReceived = transactions.filter(tx => tx.type === 'SELL').reduce((acc, tx) => acc + tx.total, 0);
-  const avgSellPrice = totalSold > 0 ? totalReceived / totalSold : 0;
+  const avgSellPrice = totalSold > 0
+    ? transactions.filter(tx => tx.type === 'SELL').reduce((acc, tx) => acc + parseFloat(tx.price), 0) / totalSold
+    : 0;
 
   const profitLoss = totalReceived - totalSpent;
   const profitLossPercent = totalSpent > 0 ? (profitLoss / totalSpent) * 100 : 0;
@@ -342,12 +353,25 @@ const Wallet = () => {
                       <div className="mt-2 text-sm">
                         <div className="flex justify-between">
                           <div>
-                            <span className="text-gray-400">Preço:</span>
-                            <span className="ml-1">USDC {tx.price}</span>
+                            <span className="text-gray-400">Preço unitário:</span>
+                            <span className="ml-1">
+                              {(parseFloat(tx.price) / parseFloat(tx.amount)).toFixed(2)}
+                              <span 
+                                className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                              >
+                                USDC
+                              </span>
+                            </span>
                           </div>
                           <div>
-                            <span className="text-gray-400">Total:</span>
-                            <span className="ml-1 font-medium">USDC {tx.total.toFixed(2)}</span>
+                            <span className="text-gray-400">Preço total:</span>
+                            <span className="ml-1 font-medium">{parseFloat(tx.price).toFixed(2)}
+                              <span 
+                                className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                              >
+                                USDC
+                              </span>
+                            </span>
                           </div>
                         </div>
                       </div>
