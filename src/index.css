@@ -98,11 +98,11 @@
   
   .buy-btn {
     @apply px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 
-    transition-all duration-300 text-white font-medium;
+    transition-all duration-300 text-white font-medium cursor-pointer;
   }
   
   .sell-btn {
     @apply px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-500 
-    transition-all duration-300 text-white font-medium;
+    transition-all duration-300 text-white font-medium cursor-pointer;
   }
 }

@@ -13,8 +13,8 @@ export const useContract = () => {
       throw new Error('Carteira não conectada');
     }
     return new ethers.Contract(
-      CONTRACTS.EnerZToken.address,
-      CONTRACTS.EnerZToken.abi,
+      CONTRACTS.EnerZ.address,
+      CONTRACTS.EnerZ.abi,
       signer
     );
   }, [provider, signer]);

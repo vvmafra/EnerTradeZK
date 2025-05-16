@@ -1,23 +1,125 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContext';
-import { getUserTokens, getUserTransactions } from '../services/dataService';
-import { UserToken, Transaction } from '../types';
 import { useToast } from '../hooks/use-toast';
-import TransactionModal from '../components/TransactionModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { ethers } from 'ethers';
+import { CONTRACTS } from '../config/contracts';
+
+interface EnerZBalance {
+  amount: string;
+  purchasePrice: number;
+  currentPrice: number;
+}
+
+interface EnerZTransaction {
+  type: 'BUY' | 'SELL';
+  amount: string;
+  price: string;
+  timestamp: number;
+  total: number;
+}
 
 const Wallet = () => {
-  const [userTokens, setUserTokens] = useState<UserToken[]>([]);
-  const [userTransactions, setUserTransactions] = useState<Transaction[]>([]);
+  const [balance, setBalance] = useState<EnerZBalance>({ amount: '0', purchasePrice: 0, currentPrice: 0 });
+  const [transactions, setTransactions] = useState<EnerZTransaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedToken, setSelectedToken] = useState<UserToken | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { account, connected } = useWallet();
+  const { connected, address } = useWallet();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [exchangeBalance, setExchangeBalance] = useState<string>('0');
+  const [walletBalance, setWalletBalance] = useState<string>('0');
+
+  const loadUserData = async () => {
+    if (!window.ethereum || !address) return;
+
+    try {
+      setLoading(true);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+      // Carregar saldo de EnerZ
+      const enerzContract = new ethers.Contract(
+        CONTRACTS.EnerZ.address,
+        CONTRACTS.EnerZ.abi,
+        provider
+      );
+
+      const balance = await enerzContract.balanceOf(address);
+      const formattedBalance = ethers.utils.formatUnits(balance, 18);
+      setWalletBalance(formattedBalance);
+
+      // Carregar transações do Exchange
+      const exchangeContract = new ethers.Contract(
+        CONTRACTS.Exchange.address,
+        CONTRACTS.Exchange.abi,
+        provider
+      );
+
+      const filter = exchangeContract.filters.ListingSold();
+      const events = await exchangeContract.queryFilter(filter);
+
+      const userTransactions = await Promise.all(
+        events
+          .filter(event => event.args.buyer === address || event.args.seller === address)
+          .map(async (event) => {
+            const { buyer, seller, amount, price } = event.args;
+            const block = await event.getBlock();
+            const amountFormatted = ethers.utils.formatUnits(amount, 18);
+            const priceFormatted = ethers.utils.formatUnits(price, 6);
+            const total = parseFloat(amountFormatted) * parseFloat(priceFormatted);
+            
+            return {
+              type: buyer === address ? 'BUY' : 'SELL',
+              amount: amountFormatted,
+              price: priceFormatted,
+              timestamp: block.timestamp * 1000,
+              total
+            };
+          })
+      );
+
+      // Calcular saldo negociado e preço médio
+      let tradedBalance = 0;
+      let totalSpent = 0;
+      let totalBought = 0;
+
+      userTransactions.forEach(tx => {
+        const amount = parseFloat(tx.amount);
+        if (tx.type === 'BUY') {
+          tradedBalance += amount;
+          totalBought += amount;
+          totalSpent += tx.total;
+        } else {
+          tradedBalance -= amount;
+        }
+      });
+
+      const averagePurchasePrice = totalBought > 0 ? totalSpent / totalBought : 0;
+
+      // Simular preço atual (você pode substituir por uma API de preços real)
+      const currentPrice = 0.5; // Exemplo: USDC 1.50 por EnerZ
+
+      setBalance({
+        amount: tradedBalance.toString(),
+        purchasePrice: averagePurchasePrice,
+        currentPrice
+      });
+      setTransactions(userTransactions as EnerZTransaction[]);
+
+      const exchangeBal = await exchangeContract.getBalance(address);
+      setExchangeBalance(ethers.utils.formatUnits(exchangeBal, 18));
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar seus dados.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!connected) {
@@ -29,164 +131,86 @@ const Wallet = () => {
       return;
     }
 
-    const loadUserData = async () => {
-      if (!account) return;
-      
-      try {
-        setLoading(true);
-        const [tokens, transactions] = await Promise.all([
-          getUserTokens(account),
-          getUserTransactions(account)
-        ]);
-        
-        setUserTokens(tokens);
-        setUserTransactions(transactions);
-      } catch (error) {
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar seus dados.",
-          variant: "destructive"
-        });
-        console.error("Failed to load user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadUserData();
-  }, [account, connected, navigate]);
+  }, [connected, address]);
 
-  const handleSellToken = (token: UserToken) => {
-    setSelectedToken(token);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedToken(null);
-  };
-
-  const calculateTotalValue = (tokens: UserToken[]) => {
-    return tokens.reduce((sum, token) => sum + (token.currentPrice * token.quantity), 0);
-  };
-
-  const calculateProfit = (tokens: UserToken[]) => {
-    return tokens.reduce((sum, token) => {
-      const currentValue = token.currentPrice * token.quantity;
-      const purchaseValue = token.purchasePrice * token.quantity;
-      return sum + (currentValue - purchaseValue);
-    }, 0);
-  };
-
-  if (!connected || !account) {
-    return null; // Will redirect via useEffect
+  if (!connected) {
+    return null;
   }
 
-  const totalValue = calculateTotalValue(userTokens);
-  const totalProfit = calculateProfit(userTokens);
+  const totalValue = parseFloat(balance.amount) * balance.currentPrice;
+  const totalCost = parseFloat(balance.amount) * balance.purchasePrice;
+  const profitLoss = totalValue - totalCost;
+  const profitLossPercent = totalCost > 0 ? (profitLoss / totalCost) * 100 : 0;
 
   return (
     <div className="min-h-screen pt-24 pb-10 px-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
-          Minha Carteira
+          Minha Carteira EnerZ
         </h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="col-span-1 lg:col-span-2">
             <div className="glass-panel p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4">Tokens de Energia</h2>
+              <h2 className="text-xl font-semibold mb-4">Meus Tokens EnerZ</h2>
               
               {loading ? (
                 <div className="space-y-4">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="p-4 border border-gray-700 rounded-lg">
-                      <Skeleton className="h-6 w-2/3 bg-gray-700 mb-3" />
-                      <div className="grid grid-cols-3 gap-4">
-                        <Skeleton className="h-5 w-full bg-gray-700" />
-                        <Skeleton className="h-5 w-full bg-gray-700" />
-                        <Skeleton className="h-5 w-full bg-gray-700" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : userTokens.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  <p>Você ainda não possui tokens de energia.</p>
-                  <button 
-                    className="mt-4 energy-btn"
-                    onClick={() => navigate('/marketplace')}
-                  >
-                    Comprar Energia
-                  </button>
+                  <Skeleton className="h-32 bg-gray-700 rounded-lg" />
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {userTokens.map((token) => {
-                    const profitLoss = token.currentPrice - token.purchasePrice;
-                    const profitLossPercent = (profitLoss / token.purchasePrice) * 100;
+                <div className="p-4 border border-gray-700 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
+                    <div>
+                      <div className="text-gray-400">Saldo Total</div>
+                      <div className="font-medium">{walletBalance} EnerZ</div>
+                    </div>
                     
-                    return (
-                      <div 
-                        key={token.id} 
-                        className="p-4 border border-gray-700 rounded-lg hover:border-enerTrade-purple/50 transition-colors"
-                      >
-                        <div className="flex justify-between mb-3">
-                          <h3 className="font-medium">{token.contractName}</h3>
-                          <button 
-                            className="text-rose-500 text-sm hover:text-rose-400"
-                            onClick={() => handleSellToken(token)}
-                          >
-                            Vender
-                          </button>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <div className="text-gray-400">Quantidade</div>
-                            <div className="font-medium">{token.quantity} kWh</div>
-                          </div>
-                          
-                          <div>
-                            <div className="text-gray-400">Preço de Compra</div>
-                            <div className="font-medium">R$ {token.purchasePrice.toFixed(2)}</div>
-                          </div>
-                          
-                          <div>
-                            <div className="text-gray-400">Preço Atual</div>
-                            <div className="font-medium">
-                              R$ {token.currentPrice.toFixed(2)}
-                              <span 
-                                className={`ml-2 text-xs ${profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                              >
-                                {profitLoss >= 0 ? '▲' : '▼'} 
-                                {Math.abs(profitLossPercent).toFixed(2)}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-3 pt-3 border-t border-gray-700 flex justify-between">
-                          <div className="text-sm">
-                            <span className="text-gray-400">Valor Total:</span>
-                            <span className="ml-2 font-medium">
-                              R$ {(token.currentPrice * token.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                          
-                          <div className="text-sm">
-                            <span className="text-gray-400">Lucro/Prejuízo:</span>
-                            <span 
-                              className={`ml-2 font-medium ${profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                            >
-                              {profitLoss >= 0 ? '+' : '-'} 
-                              R$ {Math.abs(profitLoss * token.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
+                    <div>
+                      <div className="text-gray-400">Saldo Negociado</div>
+                      <div className="font-medium">{walletBalance} EnerZ</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-400">Preço Médio de Compra</div>
+                      <div className="font-medium">USDC {balance.purchasePrice.toFixed(2)}</div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-gray-400">Preço Atual</div>
+                      <div className="font-medium">
+                        USDC {balance.currentPrice.toFixed(2)}
+                        <span 
+                          className={`ml-2 text-xs ${profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                        >
+                          {profitLoss >= 0 ? '▲' : '▼'} 
+                          {Math.abs(profitLossPercent).toFixed(2)}%
+                        </span>
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-gray-700 flex justify-between">
+                    <div className="text-sm">
+                      <span className="text-gray-400">Valor Total Negociado:</span>
+                      <span className="ml-2 font-medium">
+                        USDC {totalValue.toFixed(2)}
+                      </span>
+                    </div>
+                    
+                    <div className="text-sm">
+                      <span className="text-gray-400">Lucro/Prejuízo:</span>
+                      <span 
+                        className={`ml-2 font-medium ${profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                      >
+                        {profitLoss >= 0 ? '+' : '-'} 
+                        USDC {Math.abs(profitLoss).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -197,24 +221,18 @@ const Wallet = () => {
               {loading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="p-3 border border-gray-700 rounded-lg">
-                      <div className="flex justify-between mb-2">
-                        <Skeleton className="h-5 w-1/3 bg-gray-700" />
-                        <Skeleton className="h-5 w-1/4 bg-gray-700" />
-                      </div>
-                      <Skeleton className="h-4 w-2/3 bg-gray-700" />
-                    </div>
+                    <Skeleton key={i} className="h-16 bg-gray-700 rounded-lg" />
                   ))}
                 </div>
-              ) : userTransactions.length === 0 ? (
+              ) : transactions.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
                   <p>Você ainda não realizou transações.</p>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                  {userTransactions.map((tx) => (
+                  {transactions.map((tx, index) => (
                     <div 
-                      key={tx.id} 
+                      key={index}
                       className="p-3 border border-gray-700 rounded-lg hover:border-enerTrade-purple/50 transition-colors"
                     >
                       <div className="flex justify-between">
@@ -225,7 +243,7 @@ const Wallet = () => {
                             }`} 
                           />
                           <span className="font-medium">
-                            {tx.type === 'BUY' ? 'Compra' : 'Venda'} de {tx.quantity} kWh
+                            {tx.type === 'BUY' ? 'Compra' : 'Venda'} de {tx.amount} EnerZ
                           </span>
                           <span 
                             className={`ml-3 text-xs px-2 py-1 rounded-full ${
@@ -243,17 +261,14 @@ const Wallet = () => {
                       </div>
                       
                       <div className="mt-2 text-sm">
-                        <div className="text-gray-400">
-                          {tx.contractName}
-                        </div>
-                        <div className="flex justify-between mt-1">
+                        <div className="flex justify-between">
                           <div>
                             <span className="text-gray-400">Preço:</span>
-                            <span className="ml-1">R$ {tx.price.toFixed(2)}</span>
+                            <span className="ml-1">USDC {tx.price}</span>
                           </div>
                           <div>
                             <span className="text-gray-400">Total:</span>
-                            <span className="ml-1 font-medium">R$ {tx.total.toFixed(2)}</span>
+                            <span className="ml-1 font-medium">USDC {tx.total.toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -277,18 +292,18 @@ const Wallet = () => {
               ) : (
                 <>
                   <div className="mb-4">
-                    <div className="text-gray-400 mb-1">Valor Total em Tokens</div>
-                    <div className="text-2xl font-semibold">R$ {totalValue.toFixed(2)}</div>
+                    <div className="text-gray-400 mb-1">Valor Total em EnerZ</div>
+                    <div className="text-2xl font-semibold">USDC {totalValue.toFixed(2)}</div>
                   </div>
                   
                   <div className="mb-4">
                     <div className="text-gray-400 mb-1">Lucro/Prejuízo Total</div>
                     <div 
                       className={`text-2xl font-semibold ${
-                        totalProfit >= 0 ? 'text-green-400' : 'text-red-400'
+                        profitLoss >= 0 ? 'text-green-400' : 'text-red-400'
                       }`}
                     >
-                      {totalProfit >= 0 ? '+' : '-'} R$ {Math.abs(totalProfit).toFixed(2)}
+                      {profitLoss >= 0 ? '+' : '-'} USDC {Math.abs(profitLoss).toFixed(2)}
                     </div>
                   </div>
                   
@@ -304,28 +319,6 @@ const Wallet = () => {
           </div>
         </div>
       </div>
-      
-      {selectedToken && (
-        <TransactionModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          contract={{
-            id: selectedToken.id,
-            name: selectedToken.contractName,
-            price: selectedToken.currentPrice,
-            maxPrice: selectedToken.currentPrice,
-            minPrice: selectedToken.currentPrice,
-            month: selectedToken.contractName.split('/')[0].split(' ').pop() || '',
-            year: selectedToken.contractName.split('/')[1].split(' ')[0] || '',
-            variation: 0,
-            buyOffers: [],
-            sellOffers: []
-          }}
-          type="SELL"
-          defaultQuantity={selectedToken.quantity}
-          defaultPrice={selectedToken.currentPrice}
-        />
-      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { getContracts } from '../services/dataService';
 import TransactionModal from '../components/TransactionModal';
 import { useToast } from '../hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import TokenListings from '../components/TokenListings';
 
 const Marketplace = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -95,123 +96,11 @@ const Marketplace = () => {
           Marketplace de Energia
         </h1>
         
-        {loading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {[1, 2].map((i) => (
-              <div key={i} className="glass-panel p-4">
-                <Skeleton className="h-8 w-2/3 bg-gray-700 mb-4" />
-                <div className="space-y-3">
-                  <Skeleton className="h-5 w-1/3 bg-gray-700" />
-                  <Skeleton className="h-5 w-1/4 bg-gray-700" />
-                  <Skeleton className="h-5 w-3/4 bg-gray-700" />
-                </div>
-                <div className="mt-6">
-                  <Skeleton className="h-40 w-full bg-gray-700" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {contracts.map((contract) => (
-              <div key={contract.id} className="glass-panel rounded-lg overflow-hidden">
-                <div className="p-4 border-b border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="bg-enerTrade-purple h-8 w-8 rounded-md flex items-center justify-center mr-3">
-                        <span className="font-bold text-xs">EN</span>
-                      </div>
-                      <h3 className="font-medium text-lg">{contract.name}</h3>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-semibold">
-                        R$ {contract.price.toFixed(2)}
-                      </div>
-                      <div className={`text-sm ${contract.variation >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {contract.variation >= 0 ? '+' : ''}{contract.variation.toFixed(2)}%
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
-                    <div>
-                      <span className="text-gray-400">MAX</span>
-                      <div className="font-medium">R$ {contract.maxPrice.toFixed(2)}</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">MIN</span>
-                      <div className="font-medium">R$ {contract.minPrice.toFixed(2)}</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">ULT</span>
-                      <div className="font-medium">R$ {contract.price.toFixed(2)}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4">
-                  <div className="grid grid-cols-6 text-center text-sm font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
-                    <div className="py-2 px-1 text-emerald-300">QTD</div>
-                    <div className="py-2 px-1 col-span-2 bg-emerald-900/40 text-emerald-300">COMPRA</div>
-                    <div className="py-2 px-1 col-span-2 bg-rose-900/40 text-rose-300">VENDA</div>
-                    <div className="py-2 px-1 text-rose-300">QTD</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    {Array.from({ length: 5 }).map((_, index) => {
-                      const buyOffer = contract.buyOffers[index];
-                      const sellOffer = contract.sellOffers[index];
-                      
-                      return (
-                        <div key={index} className="grid grid-cols-6 text-center py-2 text-sm border-b border-gray-700">
-                          {/* Buy quantity */}
-                          <div className="text-emerald-400">
-                            {buyOffer?.quantity.toFixed(2) || '-'}
-                          </div>
-                          
-                          {/* Buy price (clickable) */}
-                          <div 
-                            className="col-span-2 text-emerald-400 cursor-pointer hover:bg-emerald-900/30 py-1 rounded"
-                            onClick={() => buyOffer && handleOpenModal(contract, 'BUY', buyOffer.price, buyOffer.quantity)}
-                          >
-                            {buyOffer ? `R$ ${buyOffer.price.toFixed(2)}` : '-'}
-                          </div>
-                          
-                          {/* Sell price (clickable) */}
-                          <div 
-                            className="col-span-2 text-rose-400 cursor-pointer hover:bg-rose-900/30 py-1 rounded"
-                            onClick={() => sellOffer && handleOpenModal(contract, 'SELL', sellOffer.price, sellOffer.quantity)}
-                          >
-                            {sellOffer ? `R$ ${sellOffer.price.toFixed(2)}` : '-'}
-                          </div>
 
-                          <div className="text-rose-400">
-                            {sellOffer?.quantity.toFixed(2) || '-'}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <div className="mt-4 grid grid-cols-2 gap-4">
-                    <button 
-                      className="buy-btn"
-                      onClick={() => handleOpenModal(contract, 'BUY')}
-                    >
-                      Comprar
-                    </button>
-                    <button 
-                      className="sell-btn"
-                      onClick={() => handleOpenModal(contract, 'SELL')}
-                    >
-                      Vender
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+          <div>
+            {/* <h2 className="text-xl font-bold mb-4">Tokens EnerZ</h2> */}
+            <TokenListings />
+        </div>
       </div>
       
       <TransactionModal 

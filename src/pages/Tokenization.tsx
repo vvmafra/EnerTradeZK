@@ -70,8 +70,8 @@ const Tokenization = () => {
       const signer = provider.getSigner();
       
       const contract = new ethers.Contract(
-        CONTRACTS.EnerZToken.address,
-        CONTRACTS.EnerZToken.abi,
+        CONTRACTS.EnerZ.address,
+        CONTRACTS.EnerZ.abi,
         signer
       );
 
@@ -83,7 +83,7 @@ const Tokenization = () => {
       const userAddress = await signer.getAddress();
       const balance = await contract.balanceOf(userAddress);
 
-      console.log(ethers.utils.formatUnits(balance, 18)); // mostra saldo em TNTS
+      console.log(ethers.utils.formatUnits(balance, 18)); // mostra saldo em EnerZ
   
       const tx = await contract.mint(await signer.getAddress(), Number(energy));
       await tx.wait();
@@ -191,7 +191,7 @@ const Tokenization = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Total de Tokens</label>
               <div className="p-3 bg-enerTrade-darkBlue rounded-md text-center">
-                <span className="text-xl font-semibold">{energy} TNTS</span>
+                <span className="text-xl font-semibold">{energy} EnerZ</span>
               </div>
             </div>
 
