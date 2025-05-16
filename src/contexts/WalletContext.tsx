@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ethers } from 'ethers';
 import { useToast } from '../hooks/use-toast';
@@ -9,6 +8,7 @@ interface WalletContextType {
   signer: ethers.Signer | null;
   connecting: boolean;
   connected: boolean;
+  address: string | null;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
 }
@@ -33,6 +33,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [address, setAddress] = useState<string | null>(null);
   const { toast } = useToast();
 
   const connectWallet = async () => {
@@ -58,6 +59,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       setSigner(signer);
       setAccount(account);
       setConnected(true);
+      setAddress(account);
       
       toast({
         title: "Carteira conectada",
@@ -84,6 +86,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     setProvider(null);
     setSigner(null);
     setConnected(false);
+    setAddress(null);
     localStorage.removeItem('walletConnected');
     toast({
       title: "Carteira desconectada",
@@ -99,6 +102,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           disconnectWallet();
         } else if (connected) {
           setAccount(accounts[0]);
+          setAddress(accounts[0]);
           toast({
             title: "Conta alterada",
             description: `Agora conectado com ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
@@ -132,6 +136,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
             setSigner(signer);
             setAccount(account);
             setConnected(true);
+            setAddress(account);
           } else {
             localStorage.removeItem('walletConnected');
           }
@@ -154,6 +159,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       signer,
       connecting,
       connected,
+      address,
       connectWallet,
       disconnectWallet
     }}>

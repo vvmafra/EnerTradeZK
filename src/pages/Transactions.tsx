@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContext';
@@ -7,13 +6,67 @@ import { Transaction } from '../types';
 import { useToast } from '../hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { ethers } from 'ethers';
+import { CONTRACTS } from '../config/contracts';
+
+interface ExchangeTransaction {
+  type: 'BUY' | 'SELL';
+  amount: string;
+  price: string;
+  timestamp: number;
+  buyer: string;
+  seller: string;
+}
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [exchangeTransactions, setExchangeTransactions] = useState<ExchangeTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const { connected } = useWallet();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const loadExchangeTransactions = async () => {
+    if (!window.ethereum) return;
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(
+        CONTRACTS.Exchange.address,
+        CONTRACTS.Exchange.abi,
+        provider
+      );
+
+      // Filtrar eventos de ListingSold
+      const filter = contract.filters.ListingSold();
+      const events = await contract.queryFilter(filter);
+
+      const transactions = await Promise.all(
+        events.map(async (event) => {
+          const { listingId, buyer, seller, amount, price } = event.args;
+          const block = await event.getBlock();
+          
+          return {
+            type: 'BUY',
+            amount: ethers.utils.formatUnits(amount, 18),
+            price: ethers.utils.formatUnits(price, 6),
+            timestamp: block.timestamp * 1000,
+            buyer,
+            seller
+          };
+        })
+      );
+
+      setExchangeTransactions(transactions as ExchangeTransaction[]);
+    } catch (error) {
+      console.error('Erro ao carregar transações do Exchange:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as transações do Exchange.",
+        variant: "destructive"
+      });
+    }
+  };
 
   useEffect(() => {
     if (!connected) {
@@ -25,11 +78,14 @@ const Transactions = () => {
       return;
     }
 
-    const loadTransactions = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        const data = await getMarketTransactions();
-        setTransactions(data);
+        const [marketData] = await Promise.all([
+          getMarketTransactions(),
+          loadExchangeTransactions()
+        ]);
+        setTransactions(marketData);
       } catch (error) {
         toast({
           title: "Erro",
@@ -42,38 +98,81 @@ const Transactions = () => {
       }
     };
 
-    loadTransactions();
+    loadData();
   }, [connected, navigate]);
 
   if (!connected) {
-    return null; // Will redirect via useEffect
+    return null;
   }
-
-  const groupTransactionsByContract = () => {
-    const grouped: { [key: string]: Transaction[] } = {};
-    
-    transactions.forEach(tx => {
-      if (!grouped[tx.contractName]) {
-        grouped[tx.contractName] = [];
-      }
-      grouped[tx.contractName].push(tx);
-    });
-    
-    return grouped;
-  };
-
-  const groupedTransactions = groupTransactionsByContract();
 
   return (
     <div className="min-h-screen pt-24 pb-10 px-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto space-y-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-white">
           Transações do Mercado
         </h1>
         
-        {loading ? (
-          <div className="glass-panel p-6">
-            <Skeleton className="h-8 w-1/3 bg-gray-700 mb-4" />
+        {/* Transações do Exchange */}
+        <div className="glass-panel p-6">
+          <h2 className="text-xl font-semibold mb-4">Transações do Exchange</h2>
+          {loading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 bg-gray-700 rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <div className="grid grid-cols-6 text-gray-400 text-sm border-b border-gray-700 pb-2 mb-3">
+                <div>Tipo</div>
+                <div>Quantidade</div>
+                <div>Preço (USDC)</div>
+                <div>Comprador</div>
+                <div>Vendedor</div>
+                <div className="text-right">Horário</div>
+              </div>
+              
+              {exchangeTransactions.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <p>Não há transações disponíveis.</p>
+                </div>
+              ) : (
+                <div className="space-y-1 max-h-[400px] overflow-y-auto pr-2">
+                  {exchangeTransactions.map((tx, index) => (
+                    <div 
+                      key={index}
+                      className="grid grid-cols-6 py-3 text-sm border-b border-gray-700 hover:bg-enerTrade-darkBlue/50 transition-colors"
+                    >
+                      <div>
+                        <span 
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            tx.type === 'BUY'
+                              ? 'bg-emerald-900/40 text-emerald-300'
+                              : 'bg-rose-900/40 text-rose-300'
+                          }`}
+                        >
+                          {tx.type === 'BUY' ? 'Compra' : 'Venda'}
+                        </span>
+                      </div>
+                      <div>{tx.amount} EnerZ</div>
+                      <div>{tx.price} USDC</div>
+                      <div className="truncate">{tx.buyer}</div>
+                      <div className="truncate">{tx.seller}</div>
+                      <div className="text-right text-gray-400">
+                        {format(new Date(tx.timestamp), 'dd/MM/yyyy HH:mm')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Transações do Mercado (existente) */}
+        {/* <div className="glass-panel p-6">
+          <h2 className="text-xl font-semibold mb-4">Transações do Mercado</h2>
+          {loading ? (
             <div className="space-y-3">
               {Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className="p-3 border border-gray-700 rounded-lg">
@@ -85,9 +184,7 @@ const Transactions = () => {
                 </div>
               ))}
             </div>
-          </div>
-        ) : (
-          <div className="glass-panel p-6">
+          ) : (
             <div className="overflow-hidden">
               <div className="grid grid-cols-7 text-gray-400 text-sm border-b border-gray-700 pb-2 mb-3">
                 <div className="col-span-2">Contrato</div>
@@ -103,7 +200,7 @@ const Transactions = () => {
                   <p>Não há transações disponíveis.</p>
                 </div>
               ) : (
-                <div className="space-y-1 max-h-[600px] overflow-y-auto pr-2">
+                <div className="space-y-1 max-h-[400px] overflow-y-auto pr-2">
                   {transactions.map((tx) => (
                     <div 
                       key={tx.id} 
@@ -146,8 +243,8 @@ const Transactions = () => {
                 </div>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div> */}
       </div>
     </div>
   );
