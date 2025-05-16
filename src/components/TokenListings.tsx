@@ -203,7 +203,10 @@ const TokenListings = () => {
           <h2 className="text-xl font-bold">Tokens EnerZ</h2>
           {connected && (
             <p className="text-sm text-gray-400">
-              Seu saldo: {userBalance} EnerZ
+              Seu saldo: {parseFloat(userBalance).toFixed(2)}
+              <span className="ml-1 text-xs px-2 py-1 rounded-full bg-purple-900/40 text-purple-300 inline-flex items-center">
+                EnerZ
+              </span>
             </p>
           )}
         </div>
@@ -233,10 +236,10 @@ const TokenListings = () => {
               </div>
             </div>
             <div className="p-4">
-              <div className="grid grid-cols-7 font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
-                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">QTD</div>
+              <div className="grid grid-cols-4 font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
+                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">QTD<br/>TOKENS</div>
                 <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">PREÇO<br/>UNITÁRIO</div>
-                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center col-span-3">VENDEDOR</div>
+                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">VALOR<br/>TOTAL</div>
                 <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">AÇÃO</div>
               </div>
               <div className="space-y-1">
@@ -244,11 +247,32 @@ const TokenListings = () => {
                   <div className="text-center text-gray-400 py-4">Nenhuma ordem ativa no momento</div>
                 ) : (
                   listings.filter(l => l.seller !== address).map((listing) => (
-                    <div key={listing.id} className="grid grid-cols-7 text-center py-2 text-sm border-b border-gray-700 items-center">
-                      <div className="text-white">{listing.amount}</div>
-                      <div className="text-white">USDC {listing.price}</div>
-                      <div className="col-span-3 text-gray-400">{listing.seller.slice(0, 6)}...{listing.seller.slice(-4)}</div>
-                      <div>
+                    <div key={listing.id} className="grid grid-cols-4 text-center py-2 text-sm border-b border-gray-700 items-center">
+                      <div className="text-white flex items-center justify-center">
+                        {listing.amount}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-purple-900/40 text-purple-300 inline-flex items-center"
+                        >
+                          EnerZ
+                        </span>
+                      </div>
+                      <div className="text-white flex items-center justify-center">
+                        {(parseFloat(listing.price) / parseFloat(listing.amount)).toFixed(2)}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                        >
+                          USDC
+                        </span>
+                      </div>
+                      <div className="text-white flex items-center justify-center">
+                        {listing.price}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                        >
+                          USDC
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-center">
                         <button
                           className="buy-btn px-3 py-1"
                           onClick={async () => {
@@ -281,10 +305,10 @@ const TokenListings = () => {
               </div>
             </div>
             <div className="p-4">
-              <div className="grid grid-cols-7 font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
-                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">QTD</div>
+              <div className="grid grid-cols-4 font-medium mb-2 bg-enerTrade-darkBlue rounded-md">
+                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">QTD<br/>TOKENS</div>
                 <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">PREÇO<br/>UNITÁRIO</div>
-                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center col-span-3">VENDEDOR</div>
+                <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">VALOR<br/>TOTAL</div>
                 <div className="py-2 px-1 text-emerald-300 flex items-center justify-center text-center">AÇÃO</div>
               </div>
               <div className="space-y-1">
@@ -292,11 +316,31 @@ const TokenListings = () => {
                   <div className="text-center text-gray-400 py-4">Você não possui ordens ativas</div>
                 ) : (
                   listings.filter(l => l.seller === address).map((listing) => (
-                    <div key={listing.id} className="grid grid-cols-7 text-center py-2 text-sm border-b border-gray-700 items-center">
-                      <div className="text-white">{listing.amount}</div>
-                      <div className="text-white">USDC {listing.price}</div>
-                      <div className="col-span-3 text-gray-400">{listing.seller.slice(0, 6)}...{listing.seller.slice(-4)}</div>
-                      <div>
+                    <div key={listing.id} className="grid grid-cols-4 text-center py-2 text-sm border-b border-gray-700 items-center">
+                      <div className="text-white flex items-center justify-center">{listing.amount}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-purple-900/40 text-purple-300 inline-flex items-center"
+                        >
+                          EnerZ
+                        </span>
+                      </div>
+                      <div className="text-white flex items-center justify-center">
+                        {(parseFloat(listing.price) / parseFloat(listing.amount)).toFixed(2)}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                        >
+                          USDC
+                        </span>
+                      </div>
+                      <div className="text-white flex items-center justify-center">
+                        {listing.price}
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                        >
+                          USDC
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-center">
                         <button
                           className="text-rose-400 hover:text-rose-600 font-bold text-lg px-2"
                           title="Cancelar ordem"
