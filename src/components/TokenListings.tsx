@@ -188,10 +188,10 @@ const TokenListings = () => {
   };
 
   const handleBuyConfirm = async () => {
-    // if (!selectedListing || !buyAmount) return;
+    if (!selectedListing) return;
 
-    const amount = parseFloat(selectedListing.amount);
-    const totalPrice = (amount * parseFloat(selectedListing.price)).toFixed(6);
+    // const amount = parseFloat(selectedListing.amount);
+    const totalPrice = (parseFloat(selectedListing.price)).toFixed(6);
     await handleBuyListing(selectedListing.id, totalPrice);
     setIsBuyModalOpen(false);
   };
@@ -379,8 +379,15 @@ const TokenListings = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Quantidade de EnerZ</label>
-              <Input
+            <p className="text-sm text-gray-400">
+                Quantidade de tokens: {parseFloat(selectedListing?.amount).toFixed(2)}
+                <span 
+                  className="ml-1 text-xs px-2 py-1 rounded-full bg-purple-900/40 text-purple-300 inline-flex items-center"
+                >
+                  EnerZ
+                </span>
+              </p>
+              {/* <Input
                 type="number"
                 value={selectedListing?.amount || ''}
                 disabled
@@ -388,15 +395,24 @@ const TokenListings = () => {
                 min="0"
                 max={selectedListing?.amount || 0}
                 step="0.01"
-              />
+              /> */}
               <p className="text-sm text-gray-400">
-                Preço por token: USDC {selectedListing?.price || 0}
+                Preço por token: {selectedListing ? (parseFloat(selectedListing.price) / parseFloat(selectedListing.amount)).toFixed(2) : 0}
+                <span 
+                  className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                >
+                  USDC
+                </span>
               </p>
-              {buyAmount && (
+          
                 <p className="text-sm font-medium">
-                  Total: USDC {(parseFloat(buyAmount) * parseFloat(selectedListing?.price || '0')).toFixed(2)}
+                  Preço total: {selectedListing?.price ? parseFloat(selectedListing.price).toFixed(2) : null}
+                  <span 
+                    className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center"
+                  >
+                    USDC
+                  </span>
                 </p>
-              )}
             </div>
             <Button 
               className="w-full" 
