@@ -81,8 +81,10 @@ const CreateListingModal = ({ isOpen, onClose, onSuccess }: CreateListingModalPr
         signer
       );
 
-      const amountWei = ethers.utils.parseUnits(amount, 18);
-      const priceWei = ethers.utils.parseUnits(unitPrice, 6); // Preço unitário em USDC (6 decimais)
+      const amountWei = ethers.utils.parseUnits(parseFloat(amount).toFixed(18), 18);
+
+      const totalPrice = parseFloat(amount) * parseFloat(unitPrice);
+      const priceWei = ethers.utils.parseUnits(totalPrice.toFixed(6), 6); // Preço unitário em USDC (6 decimais)
 
       const approveTx = await tokenContract.approve(CONTRACTS.Exchange.address, amountWei);
       await approveTx.wait();

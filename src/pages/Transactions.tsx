@@ -154,8 +154,16 @@ const Transactions = () => {
                           {tx.type === 'BUY' ? 'Compra' : 'Venda'}
                         </span>
                       </div>
-                      <div>{tx.amount} EnerZ</div>
-                      <div>{tx.price} USDC</div>
+                      <div>{tx.amount} 
+                        <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-purple-900/40 text-purple-300 inline-flex items-center">
+                          EnerZ
+                        </span>
+                      </div>
+                      <div>{tx.price} <span 
+                          className="ml-1 text-xs px-2 py-1 rounded-full bg-grey-900/40 text-grey-300 inline-flex items-center">
+                          USDC
+                        </span></div>
                       <div className="truncate">{tx.buyer}</div>
                       <div className="truncate">{tx.seller}</div>
                       <div className="text-right text-gray-400">
