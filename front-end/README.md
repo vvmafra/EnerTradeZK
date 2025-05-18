@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="back-end/assets/image.jpeg" alt="EnerTradeZK" width="400"/>
+</p>
+
 # 🚀 EnerTradeZK
 
 Uma plataforma inovadora para negociação de tokens de energia, construída com tecnologias modernas e seguras, integrando Web3 e Zero-Knowledge Proofs para transações privadas e seguras.
