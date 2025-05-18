@@ -50,9 +50,9 @@ INFURA_PROJECT_ID=seu_project_id_infura
 
 ## 🏗️ Contratos Deployados (Sepolia)
 
-- **EnerZ**: `0xaB658d27EFbB5582bfdb4edc835CC12342fDf24E`
+- **EnerZ**: `0xf990b608D8D3479E1F51Cba27a17Ddb74989e53c`
 - **Groth16Verifier**: `0x45fFe2034897736d0Aa9FC4f51375df007265095`
-- **Exchange**: `0x52c7949162d267eD3ff2AF191380c216Dc92d465`
+- **Exchange**: `0x0ABa3E1CF320e3b96C862C77d4e52c83e9ebFc57`
 
 ## 📝 Estrutura do Projeto
 
