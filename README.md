@@ -40,7 +40,7 @@ Demonstrar como energia pode ser tratada como ativo digital, viabilizando negoci
 - **Oráculos de energia:** Integração com fontes como Chainlink para obter preços atualizados do MWh.
 
 🔗 **Acesse o MVP:**  
-[[https://ener-trade-zk.vercel.app](https://ener-trade-zk.vercel.app)](https://enertrade-zk.vercel.app/)
+[enertrade-zk.vercel.app](https://enertrade-zk.vercel.app)
 
 ---
 
@@ -54,6 +54,7 @@ Demonstrar como energia pode ser tratada como ativo digital, viabilizando negoci
 - Infura + MetaMask (conectividade com Ethereum Sepolia testnet)
 
 **Frontend:**
+- Typescript / Javascript
 - React.js
 - Vite
 - Tailwind CSS
