@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="back-end/assets/image.jpeg" alt="EnerTradeZK" width="400"/>
+  <img src="/assets/image.jpeg" alt="EnerTradeZK" width="400"/>
 </p>
 
 # ⚡ EnerTradeZK - Tokenize sua Energia. Libere seu Poder.
