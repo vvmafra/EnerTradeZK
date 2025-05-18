@@ -1,4 +1,4 @@
-![EnerTradeZK](back-end/assets/image.jpeg)
+<img src="back-end/assets/image.jpeg" alt="EnerTradeZK" width="400"/>
 
 # ⚡ EnerTradeZK - Plataforma de Trading de Energia com Zero Knowledge
 
