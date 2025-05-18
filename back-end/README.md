@@ -31,7 +31,7 @@ EnerTradeZK é uma plataforma descentralizada para trading de energia utilizando
 1. Clone o repositório:
 ```bash
 git clone https://github.com/seu-usuario/EnerTradeZK.git
-cd EnerTradeZK
+cd back-end
 ```
 
 2. Instale as dependências:
