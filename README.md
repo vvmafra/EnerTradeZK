@@ -11,16 +11,16 @@ EnerTradeZK é uma plataforma descentralizada que transforma energia em ativo di
 ## 📘 Visão Geral da Aplicação
 
 **Problema que resolvemos:**  
-Milhões de brasileiros enfrentam contas de luz altas, sem transparência, previsibilidade ou liberdade de escolha. O mercado de energia atual é burocrático, centralizado e inacessível para pequenos consumidores.
+- Milhões de brasileiros enfrentam contas de luz altas, sem transparência, previsibilidade ou liberdade de escolha. O mercado de energia atual é burocrático, centralizado e inacessível para pequenos consumidores.
 
 **Nossa Solução:**  
-A EnerTradeZK cria uma ponte para o mercado livre de energia. Com nossa plataforma, 1 kWh vira 1 token. Usuários podem tokenizar, negociar e investir em energia de forma simples, segura e escalável.
+- A EnerTradeZK cria uma ponte para o mercado livre de energia. Com nossa plataforma, 1 kWh vira 1 token. Usuários podem tokenizar, negociar e investir em energia de forma simples, segura e escalável.
 
 **Público-alvo:**  
-Consumidores finais, pequenos geradores, investidores em energia e comunidades interessadas em fontes renováveis.
+- Consumidores finais, pequenos geradores, investidores em energia e comunidades interessadas em fontes renováveis.
 
 **Objetivo do MVP:**  
-Demonstrar como energia pode ser tratada como ativo digital, viabilizando negociações P2P com privacidade e validação técnica/jurídica por meio de provas ZK.
+- Demonstrar como energia pode ser tratada como ativo digital, viabilizando negociações P2P com privacidade e validação técnica/jurídica por meio de provas ZK.
 
 ---
 
@@ -96,17 +96,6 @@ Nosso modelo de negócios é escalável e sustentável:
 
 📩 **Contato para parcerias e dúvidas:**  
 [contato@edugera.com.br](mailto:contato@edugera.com.br)
-
----
-
-## 🔮 Próximos Passos
-
-- Adição funcionalidades mencionadas anteriormente
-  - Integração com IA
-- Onboarding para usuários leigos com tutoriais interativos  
-- Suporte a múltiplas línguas (inglês, espanhol etc.)  
-- Expansão para outros tipos de energia (marés, geotérmica)  
-- Parcerias com cooperativas energéticas e governos
 
 ---
 
