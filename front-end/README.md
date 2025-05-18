@@ -18,7 +18,7 @@ Uma plataforma inovadora para negociação de tokens de energia, construída com
 ## 📁 Estrutura de Pastas
 
 ```
-EnerTradeZK/
+front-end/
 ├── src/              # Código fonte da aplicação
 │   ├── components/   # Componentes React reutilizáveis
 │   ├── config/       # Configurações do Smart Contract
@@ -43,7 +43,7 @@ EnerTradeZK/
 git clone https://github.com/vvmafra/EnerTradeZK
 
 # Entre no diretório
-cd EnerTradeZK
+cd front-end
 
 # Instale as dependências
 npm install
