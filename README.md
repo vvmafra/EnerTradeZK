@@ -106,9 +106,12 @@ Nosso modelo de negócios é escalável e sustentável:
 
 ---
 
-## 🚀 Como Rodar Localmente
+## 🚀 Como Rodar e Acessar Plataforma
 
-Acesse os READMEs específicos de cada parte do projeto nos links acima para instruções detalhadas de instalação e execução.
+- Acesse os READMEs específicos de cada parte do projeto nos links acima para instruções detalhadas de instalação e execução.
+- É necessário requisitar tokens EnerZ (ENZ) para conseguir realizar a venda e USDC na Sepolia tesnet para conseguir interagir com plataforma
+- Para conseguir EnerZ: requisição via contato / email
+- Para receber USDC basta realizar o faucet para rede Sepolia testnet [Faucet Circle](https://faucet.circle.com/)
 
 ---
 
